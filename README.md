@@ -1,6 +1,7 @@
-# Project Title
+# Apple Stock Price Analysis
 
-Write a 1-2 sentences that quickly and clearly convey what your repo is for.
+This repository is for the final group project for STAT 184, wherein we analyze whether there is any relationship between Apple's stock price and the stock price of its suppliers. 
+Currently in progress.
 
 ## Overview
 
