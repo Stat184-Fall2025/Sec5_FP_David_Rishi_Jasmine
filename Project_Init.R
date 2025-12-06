@@ -4,11 +4,15 @@ install.packages("tidyquant")
 
 library(dplyr)
 library(tidyquant)
-tickers <- c("AAPL","HNHPF")
+library(ggplot2)
+
+# Add tickers for Apple, Foxconn, TSMC, Pegatron, and Compal
+tickers <- c("AAPL","HNHPF", "TSM", "4938.TW", "2324.TW")
+
 start_date <- "2022-01-01"
 end_date   <- Sys.Date() # Today
 
-
+# Get stock data
 stock_data <- tq_get(tickers, 
                      get  = "stock.prices", 
                      from = start_date, 
@@ -27,4 +31,12 @@ normalized_data <- stock_data %>%
     percent_change = ((adjusted / first(adjusted) - 1)*100)
          ) 
 
+# Line chart
+ggplot(normalized_data, aes(x = date, y = percent_change, color = symbol)) + 
+  geom_line(linewidth = .5) +
+  labs(title = "Normalized Stock Performance",
+       x = "Date",
+       y = "Percent Change",
+       color = "Stock") + 
+  theme_minimal()
 
