@@ -4,17 +4,15 @@ install.packages("tidyquant")
 
 library(dplyr)
 library(tidyquant)
-<<<<<<< Updated upstream
 tickers <- c("AAPL","HNHPF")
-=======
 library(ggplot2)
+library(kableExtra)
 
 # Add tickers for Apple, Foxconn, TSMC, Pegatron, and Compal
 tickers <- c("AAPL","HNHPF", "TSM", "4938.TW", "2324.TW")
 
 tickers_small <- c("AAPL", "HNHPF")
 
->>>>>>> Stashed changes
 start_date <- "2022-01-01"
 end_date   <- Sys.Date() # Today
 
@@ -43,8 +41,6 @@ normalized_data <- stock_data %>%
     percent_change = ((adjusted / first(adjusted) - 1)*100)
          ) 
 
-<<<<<<< Updated upstream
-=======
 normalized_data_small <- stock_data_small %>%
   select(symbol, date, adjusted) %>%
   group_by(symbol) %>%
@@ -61,7 +57,6 @@ ggplot(normalized_data, aes(x = date, y = percent_change, color = symbol)) +
        y = "Percent Change",
        color = "Stock") + 
   theme_minimal()
->>>>>>> Stashed changes
 
 
 ggplot(normalized_data_small, aes(x = date, y = percent_change, color = symbol)) + 
@@ -72,5 +67,13 @@ ggplot(normalized_data_small, aes(x = date, y = percent_change, color = symbol))
        color = "Stock") + 
   theme_minimal()
 
-
+normalized_data %>%
+kable(
+  caption = "<center>Supplier Performance affects on Apple stock<center/>",
+  align = c("l", rep("c",7))
+)%>%
+  kable_classic( # Pre-built styling
+    font_size = 16, # Control Font Size
+    lightable_options = "striped" # Adds striping in a pre-built table style
+  )
 
