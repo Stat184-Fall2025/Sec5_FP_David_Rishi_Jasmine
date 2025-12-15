@@ -4,11 +4,14 @@ install.packages("tidyquant")
 
 library(dplyr)
 library(tidyquant)
-tickers <- c("AAPL","HNHPF")
+
+# Add all tickers
+tickers <- c("AAPL","HNHPF", "4938.TW", "2324.TW", "TSM")
+
 start_date <- "2022-01-01"
 end_date   <- Sys.Date() # Today
 
-
+# Get stock data
 stock_data <- tq_get(tickers, 
                      get  = "stock.prices", 
                      from = start_date, 
