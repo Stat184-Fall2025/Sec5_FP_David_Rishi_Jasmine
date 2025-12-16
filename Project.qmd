@@ -19,27 +19,98 @@ execute:
 engine: knitr
 ---
 
-## Quarto
+## Introduction
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+The focus of our group project is to look into how Apple's supplier companies stock performances affect Apple's stock. We decided to look at 4 of Apple's main suppliers: Foxconn, Pegatron, Compal, and TSMC. All of these companies are based in Taiwan, and they also supply other companies with microchips and other parts. Our goal is to see whether or not there is a relationship between these stocks and Apple's, in order to see if we can use that to predict if Apple's stock performance will go up or down.
 
-## Running Code
+## The Dataset
+We got the data for our project from the tidyquant R package.  The tidyquant package is used to retrieve data about the stock market from the web (more specifically, Yahoo Finance).  Using this package we decided to pull stock information about the 5 companies we're analyzing from 2022 to the present.
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+### FAIR and CARE Principles
+The data that we pulled from the tidyquant package follows both the FAIR and CARE principles.  The FAIR principles state that data must be findable, accessible, interoperable, and reusable; while the CARE principles emphasis that data should provide collective benefit, authority to control, responsibility, and ethics.
 
-```{r}
-1 + 1
-```
+I need to find my notes from this day, so I'll add more to this section later.
 
-```{r} 1 + 1}
-```
 
-You can add options to executable code like this
-
-The `echo: false` option disables the printing of code (only output is displayed).
+## Code Appendix
 
 ```{r codeAppendix}
 #| ref.label = knitr::all_labels(),
 #| echo = TRUE,
 #| eval = FALSE
+
+library(dplyr)
+library(tidyquant)
+tickers <- c("AAPL","HNHPF")
+library(ggplot2)
+library(kableExtra)
+
+# Add tickers for Apple, Foxconn, TSMC, Pegatron, and Compal
+tickers <- c("AAPL","HNHPF", "TSM", "4938.TW", "2324.TW")
+
+tickers_small <- c("AAPL", "HNHPF")
+
+start_date <- "2022-01-01"
+end_date   <- Sys.Date() # Today
+
+
+stock_data <- tq_get(tickers, 
+                     get  = "stock.prices", 
+                     from = start_date, 
+                     to   = end_date)
+
+stock_data_small <- tq_get(tickers_small, 
+                           
+                     get  = "stock.prices", 
+                     from = start_date, 
+                     to   = end_date)
+
+"I normalized the data b/c APPL stock price is over 100 and HNHPF is less than 10, 
+so we wont be able to see the couple cent changes in foxconn and comparison to the dollar changes in APPL.
+In other words HNHPF will look like a flat line even when APPL in visually moving up and down."
+
+
+normalized_data <- stock_data %>%
+  select(symbol, date, adjusted) %>%
+  group_by(symbol) %>%
+  arrange(date) %>%
+  mutate(
+    percent_change = ((adjusted / first(adjusted) - 1)*100)
+         ) 
+
+normalized_data_small <- stock_data_small %>%
+  select(symbol, date, adjusted) %>%
+  group_by(symbol) %>%
+  arrange(date) %>%
+  mutate(
+    percent_change = ((adjusted / first(adjusted) - 1)*100)
+  ) 
+
+# Line chart
+ggplot(normalized_data, aes(x = date, y = percent_change, color = symbol)) + 
+  geom_line(linewidth = .5) +
+  labs(title = "Normalized Stock Performance",
+       x = "Date",
+       y = "Percent Change",
+       color = "Stock") + 
+  theme_minimal()
+
+
+ggplot(normalized_data_small, aes(x = date, y = percent_change, color = symbol)) + 
+  geom_line(linewidth = .5) +
+  labs(title = "Normalized Stock Performance",
+       x = "Date",
+       y = "Percent Change",
+       color = "Stock") + 
+  theme_minimal()
+
+normalized_data %>%
+kable(
+  caption = "<center>Supplier Performance affects on Apple stock<center/>",
+  align = c("l", rep("c",7))
+)%>%
+  kable_classic( # Pre-built styling
+    font_size = 16, # Control Font Size
+    lightable_options = "striped" # Adds striping in a pre-built table style
+  )
 ```
