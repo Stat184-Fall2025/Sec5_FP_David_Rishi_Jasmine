@@ -1,0 +1,45 @@
+---
+title: "Final Project"
+subtitle: "STAT 184"
+author: "David Goldberg, Jasmine Randhawa, Rishi Lal"
+date: "Monday, December 15, 2025"
+format:
+  pdf:
+    toc: false
+    number-sections: false
+    margin-left: 1in
+    margin-right: 1in
+    margin-top: 1in
+    margin-bottom: 1in
+execute:
+  echo: false
+  eval: true
+  warning: false
+  message: false
+engine: knitr
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
+
+```{r} 1 + 1}
+```
+
+You can add options to executable code like this
+
+The `echo: false` option disables the printing of code (only output is displayed).
+
+```{r codeAppendix}
+#| ref.label = knitr::all_labels(),
+#| echo = TRUE,
+#| eval = FALSE
+```
