@@ -41,6 +41,81 @@ This section will explain the normalization and cumulative growth.
 
 ## Tables
 
+### Apple's Recent Trading Data
+
+This table provides information about Apple's most recent trading activity, including the daily open, high, low, close, and trading volume for the last five trading days.  This lets us see short-term fluctuations in Apple's stock price.
+
+During this time, Apple's stock remained stable and fluctuated from $271 to $280.  The most notable event was when Apple opened at $280.15 on December 15th, and then dipped to $274.11 at the end of the day.  December 15th was also when the highest volume occurred, with over 50 million shares.  Still, Apple's stock remains quite stable and only shows minor ups and downs.
+
+```{r}
+# Rename columns to be capitalized for a professional look.
+table_sample <- apple_data %>%
+  tail(5) %>%                                      # Select only the last 5 rows
+  select(date, open, high, low, close, volume) %>% # Keep only essential columns
+  mutate(date = format(date, "%B %d, %Y")) %>%     # Format date nicely (e.g., "Jan 01, 2024")
+  rename(                                          # Rename columns for display
+    "Date"   = date,
+    "Open"   = open,
+    "High"   = high,
+    "Low"    = low,
+    "Close"  = close,
+    "Volume" = volume
+  )
+
+# 'scale_down' automatically shrinks the table if it's too wide for the PDF margin.
+# 'hold_position' forces the table to appear exactly where you put the code, not floating away.
+kbl(table_sample, caption = "Table 1: Recent Apple (AAPL) Stock Performance", booktabs = T) %>%
+  kable_styling(latex_options = c("striped", "scale_down", "hold_position")) %>%
+  column_spec(1, bold = TRUE) # Make the Date column bold
+```
+
+
+### Normalized Percent Change Comparison Table
+
+This table shows how Apple and it's key suppliers' stock prices changed over time, by using normalized percent change.  By setting each stock's starting value to 0%, we can compare their movements, despite the fact that the stock prices are quite varied.
+
+
+```{r}
+normalized_data %>%
+kable(
+  caption = "<center>Supplier Performance affects on Apple stock<center/>",
+  align = c("l", rep("c",7))
+)%>%
+  kable_classic( # Pre-built styling
+    font_size = 16, # Control Font Size
+    lightable_options = "striped" # Adds striping in a pre-built table style
+  )
+```
+
+### Annual Total Returns
+
+This table summarizes the total yearly return from 2022 to 2025 for Apple, Foxconn, TSMC, Compal, and Pegatron.  The returns are showed as percentages, and are calculated from the difference between the first and last adjusted closing price of the year.  Doing this lets us see the difference in performance between the companies, regardless of their stock price.
+
+2022 was the worst year, with Apple and most of its suppliers having negative returns.  Only Compal had a small positive return of +3.0%.  In 2023, companies started to improve with Apple gaining 54.8% and Compal rising by 80.2%.  During 2024, stock performance was mixed but still mainly positive.  TSMC and Foxconn did very well, with total returns of 97.3% and 73.3%.  However, Compal started to slip with a return of -1.7%.  In 2025, returns were more moderate with only Apple, Foxconn, and TSMC having decent positive returns (32.4%, 32.4%, 44.2%).  However, both Pegtron and Compal declined.
+
+Apple's performance moved in the same direction as its suppliers, but to varying extents.  2023 and 2024 were strong years that likely had widespread industry growth, while external events in 2022 and 2025 (COVID, AI boom) led to some suppliers struggling, even when Apple had a positive performance.
+
+```{r}
+# Annual Return Table
+annual_return_table <- annual_summary %>%
+  mutate(
+    total_return_pct = scales::percent(total_return, accuracy = 0.1)
+  ) %>%
+  select(symbol, year, total_return_pct) %>%  # Keep only the formatted column
+  arrange(year, symbol)
+
+# Create a styled table
+kbl(
+  annual_return_table,
+  caption = "Annual Total Returns for Apple and Suppliers",
+  col.names = c("Symbol", "Year", "Total Return (%)"),
+  align = c("c","c","c"),
+) %>%
+  kable_styling() %>%
+  column_spec(1, bold = TRUE)   # Bolds the ticker column
+```
+
+
 ## Visualizations
 
 ### Normalized Performance Line Chart
@@ -201,6 +276,29 @@ stock_data_small <- tq_get(tickers_small,
                      from = start_date, 
                      to   = end_date)
 
+
+"I normalized the data b/c APPL stock price is over 100 and HNHPF is less than 10, 
+so we wont be able to see the couple cent changes in foxconn and comparison to the dollar changes in APPL.
+In other words HNHPF will look like a flat line even when APPL in visually moving up and down."
+
+
+normalized_data <- stock_data %>%
+  select(symbol, date, adjusted) %>%
+  group_by(symbol) %>%
+  arrange(date) %>%
+  mutate(
+    percent_change = ((adjusted / first(adjusted) - 1)*100)
+         ) 
+
+normalized_data_small <- stock_data_small %>%
+  select(symbol, date, adjusted) %>%
+  group_by(symbol) %>%
+  arrange(date) %>%
+  mutate(
+    percent_change = ((adjusted / first(adjusted) - 1)*100)
+  ) 
+
+
 # Fetch Data (if you haven't already)
 apple_data <- tq_get("AAPL", get = "stock.prices", from = "2023-01-01")
 
@@ -224,28 +322,33 @@ kbl(table_sample, caption = "Table 1: Recent Apple (AAPL) Stock Performance", bo
   kable_styling(latex_options = c("striped", "scale_down", "hold_position")) %>%
   column_spec(1, bold = TRUE) # Make the Date column bold
 
+normalized_data %>%
+kable(
+  caption = "<center>Supplier Performance affects on Apple stock<center/>",
+  align = c("l", rep("c",7))
+)%>%
+  kable_classic( # Pre-built styling
+    font_size = 16, # Control Font Size
+    lightable_options = "striped" # Adds striping in a pre-built table style
+  )
 
-
-"I normalized the data b/c APPL stock price is over 100 and HNHPF is less than 10, 
-so we wont be able to see the couple cent changes in foxconn and comparison to the dollar changes in APPL.
-In other words HNHPF will look like a flat line even when APPL in visually moving up and down."
-
-
-normalized_data <- stock_data %>%
-  select(symbol, date, adjusted) %>%
-  group_by(symbol) %>%
-  arrange(date) %>%
+# Annual Return Table
+annual_return_table <- annual_summary %>%
   mutate(
-    percent_change = ((adjusted / first(adjusted) - 1)*100)
-         ) 
+    total_return_pct = scales::percent(total_return, accuracy = 0.1)
+  ) %>%
+  select(symbol, year, total_return_pct) %>%  # Keep only the formatted column
+  arrange(year, symbol)
 
-normalized_data_small <- stock_data_small %>%
-  select(symbol, date, adjusted) %>%
-  group_by(symbol) %>%
-  arrange(date) %>%
-  mutate(
-    percent_change = ((adjusted / first(adjusted) - 1)*100)
-  ) 
+# Create a styled table
+kbl(
+  annual_return_table,
+  caption = "Annual Total Returns for Apple and Suppliers",
+  col.names = c("Symbol", "Year", "Total Return (%)"),
+  align = c("c","c","c"),
+) %>%
+  kable_styling() %>%
+  column_spec(1, bold = TRUE)   # Bolds the ticker column
 
 # Line chart
 ggplot(normalized_data, aes(x = date, y = percent_change, color = symbol)) + 
@@ -265,15 +368,6 @@ ggplot(normalized_data_small, aes(x = date, y = percent_change, color = symbol))
        color = "Stock") + 
   theme_minimal()
 
-normalized_data %>%
-kable(
-  caption = "<center>Supplier Performance affects on Apple stock<center/>",
-  align = c("l", rep("c",7))
-)%>%
-  kable_classic( # Pre-built styling
-    font_size = 16, # Control Font Size
-    lightable_options = "striped" # Adds striping in a pre-built table style
-  )
 
 # Prepare Cumulative Growth chart
 yearly_growth <- stock_data %>% # Using the stock data from above.
