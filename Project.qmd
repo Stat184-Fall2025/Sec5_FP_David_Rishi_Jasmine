@@ -21,21 +21,35 @@ engine: knitr
 
 # Introduction
 
-The focus of our group project is to look into how Apple's supplier companies stock performances affect Apple's stock. We decided to look at 4 of Apple's main suppliers: Foxconn, Pegatron, Compal, and TSMC. All of these companies are based in Taiwan, and they also supply other companies with microchips and other parts. Our goal is to see whether or not there is a relationship between these stocks and Apple's, in order to see if we can use that to predict if Apple's stock performance will go up or down.
+The focus of our group project is to look into how Apple's supplier companies stock performances affect Apple's stock. We decided to look at 4 of Apple's main suppliers: Foxconn, Pegatron, Compal, and TSMC. All of these companies are based in Taiwan, and they also supply companies other than Apple.
+
+Since Apple is one the worlds most valuable companies, its supply chain directly impacts its production and in turn its market performance. By examining how these key suppliers' stock movements relates to Apple's stock price, we hope to gain predictive insights into Apple's financial performance. Our analysis is quite relevant given how recent global supply chain disruptions and the increasing importance of semiconductor manufacturing impacts the tech industry.
 
 ## The Dataset
 
-We got the data for our project from the tidyquant R package. The tidyquant package is used to retrieve data about the stock market from the web (more specifically, Yahoo Finance). Using this package we decided to pull stock information about the 5 companies we're analyzing from 2022 to the present.
+We acquired our data for our project from the tidyquant R package. The tidyquant package is used to retrieve data about the stock market from the web (more specifically, Yahoo Finance).
+
+Our dataset consists of daily adjusted closing prices for Apple (AAPL) and four major suppliers from January 1, 2022 to December 16, 2025. We chose these suppliers since they play critical roles in Apple's supply chain: Foxconn (Hon Hai Precision) handles final assembly, TSMC manufactures advanced chips, while Pegatron and Compal provide additional manufacturing capacity. Companies like Samsung and LG also supply Apple with parts, but we didn't choose they also manufacture their own products and are competitors with Apple.
+
+The time period covers major events in the global economy, including: post-pandemic recovery, supply chain normalization, and the recent AI investment boom. This gives us a broad view of different market conditions, so we can analyze performance based on different scenarios.
 
 ### FAIR and CARE Principles
 
-The data that we pulled from the tidyquant package follows both the FAIR and CARE principles. The FAIR principles state that data must be findable, accessible, interoperable, and reusable; while the CARE principles emphasis that data should provide collective benefit, authority to control, responsibility, and ethics.
+The data that we pulled from the tidyquant package follows FAIR principles, but not CARE principles. The FAIR principles state that data must be findable, accessible, interoperable, and reusable; while the CARE principles emphasis that data should provide collective benefit, authority to control, responsibility, and ethics.
 
-I need to find my notes from this day, so I'll add more to this section later.
+Since our data comes from the tidyquant package, it's both findable and accessible since anyone with RStudio can quickly find, load, and then use the data. The data is also interoperable as it the vocabulary and formats that it uses works with other tools, such as tidyverse and ggplot2. Tidyquant can be used by others in context outside of our project, thus making it reusable as well. Thus, our data follows the FAIR principles.
+
+The CARE principles are people-focused, as opposed to data-focused. Information about the stock market from tidyquant provides collective benefit as it can inform people about how stocks work. It is also responsibly collected and it is ethical to collect information about stock performance. However, it does not have authority to control since only the government (at least in the US) has jurisdiction over the stock market.
 
 ## Methods
 
-This section will explain the normalization and cumulative growth.
+To compare stocks that have different price levels, we normalized each stock's performance by calculating its percent change in relation to its starting value on January 1st, 2022. By doing this, we can compare relative performance more easily. Apple's stock trades around \$275, while Foxconn's stock trades around \$13. This makes direct price comparison between Apple and its suppliers meaningless.
+
+We calculated normalized percentage change using the formula: Percent Change = ((Adjusted Price / First Adjusted Price) - 1) \* 100
+
+We also computed annual returns by comparing each stock's adjusted closing price at the beginning and the end of each year. By splitting this up by year, we could see how the companies performed based on different market conditions and business cycles.
+
+Our analysis includes both visual comparisons through line charts and bar plots, as well as tables that gave summaries of recent trading activity and stock performance. By doing this, we can look to see if there's any correlation between Apple's stock performance and its suppliers.
 
 # Results
 
@@ -43,9 +57,9 @@ This section will explain the normalization and cumulative growth.
 
 ### Apple's Recent Trading Data
 
-This table provides information about Apple's most recent trading activity, including the daily open, high, low, close, and trading volume for the last five trading days.  This lets us see short-term fluctuations in Apple's stock price.
+This table provides information about Apple's most recent trading activity, including the daily open, high, low, close, and trading volume for the last five trading days. This lets us see short-term fluctuations in Apple's stock price.
 
-During this time, Apple's stock remained stable and fluctuated from $271 to $280.  The most notable event was when Apple opened at $280.15 on December 15th, and then dipped to $274.11 at the end of the day.  December 15th was also when the highest volume occurred, with over 50 million shares.  Still, Apple's stock remains quite stable and only shows minor ups and downs.
+During this time, Apple's stock remained stable and fluctuated from \$271 to \$280. The most notable event was when Apple opened at \$280.15 on December 15th, and then dipped to \$274.11 at the end of the day. December 15th was also when the highest volume occurred, with over 50 million shares. Still, Apple's stock remains quite stable and only shows minor ups and downs.
 
 ```{r}
 # Rename columns to be capitalized for a professional look.
@@ -69,11 +83,9 @@ kbl(table_sample, caption = "Table 1: Recent Apple (AAPL) Stock Performance", bo
   column_spec(1, bold = TRUE) # Make the Date column bold
 ```
 
-
 ### Normalized Percent Change Comparison Table
 
-This table shows how Apple and it's key suppliers' stock prices changed over time, by using normalized percent change.  By setting each stock's starting value to 0%, we can compare their movements, despite the fact that the stock prices are quite varied.
-
+This table shows how Apple and it's key suppliers' stock prices changed over time, by using normalized percent change. By setting each stock's starting value to 0%, we can compare their movements, despite the fact that the stock prices are quite varied.
 
 ```{r}
 normalized_data %>%
@@ -89,11 +101,11 @@ kable(
 
 ### Annual Total Returns
 
-This table summarizes the total yearly return from 2022 to 2025 for Apple, Foxconn, TSMC, Compal, and Pegatron.  The returns are showed as percentages, and are calculated from the difference between the first and last adjusted closing price of the year.  Doing this lets us see the difference in performance between the companies, regardless of their stock price.
+This table summarizes the total yearly return from 2022 to 2025 for Apple, Foxconn, TSMC, Compal, and Pegatron. The returns are showed as percentages, and are calculated from the difference between the first and last adjusted closing price of the year. Doing this lets us see the difference in performance between the companies, regardless of their stock price.
 
-2022 was the worst year, with Apple and most of its suppliers having negative returns.  Only Compal had a small positive return of +3.0%.  In 2023, companies started to improve with Apple gaining 54.8% and Compal rising by 80.2%.  During 2024, stock performance was mixed but still mainly positive.  TSMC and Foxconn did very well, with total returns of 97.3% and 73.3%.  However, Compal started to slip with a return of -1.7%.  In 2025, returns were more moderate with only Apple, Foxconn, and TSMC having decent positive returns (32.4%, 32.4%, 44.2%).  However, both Pegtron and Compal declined.
+2022 was the worst year, with Apple and most of its suppliers having negative returns. Only Compal had a small positive return of +3.0%. In 2023, companies started to improve with Apple gaining 54.8% and Compal rising by 80.2%. During 2024, stock performance was mixed but still mainly positive. TSMC and Foxconn did very well, with total returns of 97.3% and 73.3%. However, Compal started to slip with a return of -1.7%. In 2025, returns were more moderate with only Apple, Foxconn, and TSMC having decent positive returns (32.4%, 32.4%, 44.2%). However, both Pegtron and Compal declined.
 
-Apple's performance moved in the same direction as its suppliers, but to varying extents.  2023 and 2024 were strong years that likely had widespread industry growth, while external events in 2022 and 2025 (COVID, AI boom) led to some suppliers struggling, even when Apple had a positive performance.
+Apple's performance moved in the same direction as its suppliers, but to varying extents. 2023 and 2024 were strong years that likely had widespread industry growth, while external events in 2022 and 2025 (COVID, AI boom) led to some suppliers struggling, even when Apple had a positive performance.
 
 ```{r}
 # Annual Return Table
@@ -114,7 +126,6 @@ kbl(
   kable_styling() %>%
   column_spec(1, bold = TRUE)   # Bolds the ticker column
 ```
-
 
 ## Visualizations
 
@@ -195,9 +206,9 @@ print(line_plot) # This will result in the line plot for every year.
 
 ### Annual Returns Bar Chart
 
-The bar chart below summarizes the total annual return for Apple and its four main suppliers from 2022 to the present.  Each bar represents the percent change in __ from the beginning to the end of the year.
+The bar chart below summarizes the total annual return for Apple and its four main suppliers from 2022 to the present. Each bar represents the percent change in \_\_ from the beginning to the end of the year.
 
-2022 was a difficult year for every company, which correlates to how the tech market was still recovering from the effects of COVID-19.  2023 was when the Apple and its supplier companies started to rebound.  Compal and Apple had the strongest performance.  In 2024, growth slowed for Pegatron and Compal while Apple maintained solid growth.  TSMC and Foxconn surged, likely due to increased demand or changes in operations.  During 2025, Apple and its two main suppliers still grew, but at a more modest rate.  Pegatron and Compal declined, likely due to a lack of demand and a lull in sales for non-AI technology.
+2022 was a difficult year for every company, which correlates to how the tech market was still recovering from the effects of COVID-19. 2023 was when the Apple and its supplier companies started to rebound. Compal and Apple had the strongest performance. In 2024, growth slowed for Pegatron and Compal while Apple maintained solid growth. TSMC and Foxconn surged, likely due to increased demand or changes in operations. During 2025, Apple and its two main suppliers still grew, but at a more modest rate. Pegatron and Compal declined, likely due to a lack of demand and a lull in sales for non-AI technology.
 
 ```{r}
 bar_plot <- ggplot(annual_summary, aes(x = symbol, y = total_return, fill = symbol)) +
@@ -222,17 +233,21 @@ print(bar_plot) # This will result in the bar plot for every year.
 
 ## Relationship Between Apple and Suppliers
 
-Apple's stock performance isn't perfectly correlated with the suppliers. While suppliers do provide Apple with necessary components for manufacturing their products, their stock movements also depend on the broader semiconductor and electronics market.
+Our analysis shows that Apple's stock is less volatile compared to its suppliers. Apple's stability is likely due to brand loyalty, that it generates revenue from multiple sources, and that it has money reserved to act as a buffer against supply chain fluctuations. In contrasts, suppliers have more dramatic swings and are more sensitive to market changes. While Foxconn, TSMC, Pegatron, and Compal have some correlation with Apple's performance, the strength of their relationship is affected by market conditions.
 
 ## Predictive Value
 
-Supplier stocks can provide early indicators of Apple's stock performance, especially the larger companies that have greater revenues. However, product launches, global demand, and brand perceptions also play a large role in Apples performance.
+Foxconn and TSMC have the strongest predictive signals for Apple's stock. In early 2024, both companies had an upward trajectory weeks before Apple's similar positive trend. This suggests that supply chain improvements or an increase in production orders will first affect supplier stocks before affecting Apple's. However, this mainly applies to normal periods and doesn't account for when Apple launches new products. During those periods, consumer demand and innovation have more of an impact on Apple's stock performance than supply chain factors.
 
 ## Limitations
 
-The data that we collected is limited from 2022 to the present, so it may not catch long-term patterns and cycles. Supplier stocks can also be influenced by clients other than Apple, so they aren't always reliable.
+There are several important limitations that have affected our analysis. First, we analyzed only four years of stock patterns in order to avoid dealing with outlying data that came as a result of the COVID-19 pandemic. However, by doing this we may have not been able to catch longer-term patterns in the market. Second, we aren't able to isolate Apple-specific demand from outside market forces that affect suppliers. TSMC had dramatic growth over the last few years due to a high increase in demand for AI chips from multiple companies, not just Apple. Third, Compal and Pegatron are listed on the Taiwanese stock market and are recorded in TWD (Taiwanese Dollars) instead of USD. Changes in the currency exchange rate could have impacted returns for their stocks. Finally, geopolitical tensions between Taiwan, China, and the US has led to Taiwanese companies being negatively affected. This could lead to contracts being renogotiated, especially with Pegatron and Compal which are smaller companies. Thus their recent decrease in performance could be more linked to external forces than Apple.
 
 # Conclusion
+
+Our analysis suggests that while Apple's stock performance has correlation with key suppliers, the relationship is complex and influenced by external factors.  Foxconn and TSMC provide positive indicators during periods of supply chain growth or changes within the tech industry.  However, Apple's dominance and diversified revenue allows its stock to also be affected by consumer demand during product launches or other brand movements, not only its suppliers' performance.
+
+Monitoring supplier stocks is still beneficial to investors.  Following Foxconn and TSMC can give early insight or warning signals about Apple's production capacity and manufacturing expenses.  However, these signals should be considered along with other factors like product innovation, consumer trends, public sentiment, and Apple's services revenue (e.g., AppleTV, Apple App Store).  To build a more comprehensive predictive model could benefit from more research into earnings reports and estimates about production volumes.
 
 # Code Appendix
 
