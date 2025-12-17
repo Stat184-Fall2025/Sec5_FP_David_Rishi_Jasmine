@@ -12,10 +12,10 @@ format:
     margin-top: 1in
     margin-bottom: 1in
 execute:
-  echo: false
-  eval: true
   warning: false
   message: false
+  echo: false
+  eval: true
 engine: knitr
 ---
 
@@ -245,9 +245,51 @@ There are several important limitations that have affected our analysis. First, 
 
 # Conclusion
 
-Our analysis suggests that while Apple's stock performance has correlation with key suppliers, the relationship is complex and influenced by external factors.  Foxconn and TSMC provide positive indicators during periods of supply chain growth or changes within the tech industry.  However, Apple's dominance and diversified revenue allows its stock to also be affected by consumer demand during product launches or other brand movements, not only its suppliers' performance.
+Our analysis suggests that while Apple's stock performance has correlation with key suppliers, the relationship is complex and influenced by external factors. Foxconn and TSMC provide positive indicators during periods of supply chain growth or changes within the tech industry. However, Apple's dominance and diversified revenue allows its stock to also be affected by consumer demand during product launches or other brand movements, not only its suppliers' performance.
 
-Monitoring supplier stocks is still beneficial to investors.  Following Foxconn and TSMC can give early insight or warning signals about Apple's production capacity and manufacturing expenses.  However, these signals should be considered along with other factors like product innovation, consumer trends, public sentiment, and Apple's services revenue (e.g., AppleTV, Apple App Store).  To build a more comprehensive predictive model could benefit from more research into earnings reports and estimates about production volumes.
+Monitoring supplier stocks is still beneficial to investors. Following Foxconn and TSMC can give early insight or warning signals about Apple's production capacity and manufacturing expenses. However, these signals should be considered along with other factors like product innovation, consumer trends, public sentiment, and Apple's services revenue (e.g., AppleTV, Apple App Store). To build a more comprehensive predictive model could benefit from more research into earnings reports and estimates about production volumes.
+
+# MLA Citations
+
+## R
+
+R Core Team. *R: A Language and Environment for Statistical Computing*. R Foundation for Statistical Computing, 2023. Web. 15 Dec. 2025.
+
+## dplyr
+
+Hadley Wickham, Romain François, Lionel Henry, and Kirill Müller. *dplyr: A Grammar of Data Manipulation*. R package version 1.1.4, 2023. Web. 15 Dec. 2025.
+
+## tidyquant
+
+Matt Dancho and Davis Vaughan. *tidyquant: Tidy Quantitative Financial Analysis*. R package version 1.0.8, 2023. Web. 15 Dec. 2025.
+
+## ggplot2
+
+Hadley Wickham. *ggplot2: Elegant Graphics for Data Analysis*. Springer-Verlag New York, 2016. Web. 15 Dec. 2025.
+
+## scales
+
+Hadley Wickham and Dana Seidel. *scales: Scale Functions for Visualization*. R package version 1.3.0, 2023. Web. 15 Dec. 2025.
+
+## lubridate
+
+Garrett Grolemund and Hadley Wickham. *lubridate: Make Dealing with Dates a Little Easier*. R package version 1.9.3, 2023. Web. 15 Dec. 2025.
+
+## kableExtra
+
+Hao Zhu. *kableExtra: Construct Complex Table with 'kable' and Pipe Syntax*. R package version 1.4.0, 2024. Web. 15 Dec. 2025.
+
+# knitr
+
+Yihui Xie. *knitr: A General-Purpose Package for Dynamic Report Generation in R*. R package version 1.45, 2023. Web. 15 Dec. 2025.
+
+## lintr
+
+Jim Hester, Michael Quinn, and Kun Ren. *lintr: A 'Linter' for R Code*. R package version 3.1.2, 2024. Web. 15 Dec. 2025.
+
+# Author Contribution
+
+David: Rishi: Jasmine: Narrative text, Data visualization
 
 # Code Appendix
 
@@ -255,6 +297,8 @@ Monitoring supplier stocks is still beneficial to investors.  Following Foxconn 
 #| ref.label = knitr::all_labels(),
 #| echo = TRUE,
 #| eval = FALSE
+
+# Style Guide: Tidyverse
 
 # Load necessary libraries
 library(dplyr)
@@ -264,6 +308,7 @@ library(scales) # Useful in formatting
 library(lubridate) # Allows us to work with dates easily
 library(kableExtra)
 library(knitr)
+
 
 # Add tickers for Apple, Foxconn, TSMC, Pegatron, and Compal
 # AAPL    = Apple Inc.
