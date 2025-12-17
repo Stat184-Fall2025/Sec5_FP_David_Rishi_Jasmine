@@ -19,41 +19,123 @@ execute:
 engine: knitr
 ---
 
-## Introduction
+# Introduction
 
 The focus of our group project is to look into how Apple's supplier companies stock performances affect Apple's stock. We decided to look at 4 of Apple's main suppliers: Foxconn, Pegatron, Compal, and TSMC. All of these companies are based in Taiwan, and they also supply other companies with microchips and other parts. Our goal is to see whether or not there is a relationship between these stocks and Apple's, in order to see if we can use that to predict if Apple's stock performance will go up or down.
 
 ## The Dataset
-We got the data for our project from the tidyquant R package.  The tidyquant package is used to retrieve data about the stock market from the web (more specifically, Yahoo Finance).  Using this package we decided to pull stock information about the 5 companies we're analyzing from 2022 to the present.
+
+We got the data for our project from the tidyquant R package. The tidyquant package is used to retrieve data about the stock market from the web (more specifically, Yahoo Finance). Using this package we decided to pull stock information about the 5 companies we're analyzing from 2022 to the present.
 
 ### FAIR and CARE Principles
-The data that we pulled from the tidyquant package follows both the FAIR and CARE principles.  The FAIR principles state that data must be findable, accessible, interoperable, and reusable; while the CARE principles emphasis that data should provide collective benefit, authority to control, responsibility, and ethics.
+
+The data that we pulled from the tidyquant package follows both the FAIR and CARE principles. The FAIR principles state that data must be findable, accessible, interoperable, and reusable; while the CARE principles emphasis that data should provide collective benefit, authority to control, responsibility, and ethics.
 
 I need to find my notes from this day, so I'll add more to this section later.
 
+## Methods
 
-## Code Appendix
+This section will explain the normalization and cumulative growth.
+
+# Results
+
+## Tables
+
+## Visualizations
+
+### Normalized Performance Line Chart
+
+The normalized line chart shows how Apple and its suppliers' stocks have performed since their starting values in 2022.
+
+TSMC (TSM) had the greatest overall growth, and had a steep upward trend that began in 2024. However, TSMC also had the worst normalized stock performance from 2022 until 2024. This suggest that TSMC was likely hit the hardest of the suppliers by COVID-19, and it's strong performance came as a result from increased demand for semiconductors and its role in the current AI boom.
+
+Foxconn (HNHPF) also demonstrates significant growth from 2024 and onward. It's percent change is very close to TSMC and it's stock didn't drop as much as TSMC from 2022 to 2024. This is likely due to Foxconn being Apple's main supplier for assembly.
+
+Pegatron (4938.TW) and Compal (2324.TW) had moderate growth, which then dipped in 2025. This suggests that they have a slower recovery compared to TSMC and Foxconn and are likely not involved with AI.
+
+Apple (AAPL) remains relatively stable and has had a decent upward trend. It's much less volatile than its suppliers, which is likely due to its presence in multiple markets and that Apple is an established company.
+
+The difference in stock performance shows that supplier stocks can outperform Apple's stock in relative terms, especially in growth phases. Currently, AI is being heavily invested in and supplier companies that produce things for AI can experience a lot of growth. TSMC and Foxconn are the most dynamic of the supplier stocks, and can offer predictive insight for Apple's performance.
+
+```{r}
+ggplot(normalized_data, aes(x = date, y = percent_change, color = symbol)) + 
+  geom_line(linewidth = .5) +
+  labs(title = "Normalized Stock Performance",
+       x = "Date",
+       y = "Percent Change",
+       color = "Stock") + 
+  theme_minimal()
+```
+
+### Normalized Apple and Foxconn Stock Performance
+
+Looking at the previous graph, we concluded that both Foxconn and TSMC could have predictive value for Apple. We decided to look into the relationship between Foxconn and Apple since Foxconn is a larger supplier to Apple than TSMC.
+
+Foxconn is more volatile than Apple, and starting in early 2024 has much sharper swings in percent change. At this time, its percent change also surpasses Apple's. Despite having a lower stock price, Foxconn has stronger relative growth.
+
+The difference in volatility between Apple and Foxconn indicates that Foxconn is more sensitive to demand and supply chain pressures. Foxconn's performance can potentially change before Apple's. Foxconn trended upwards before Apple followed suit in both early 2024 and 2025, which supports the idea that supplier stocks can be leading indicators in performance. However, Apple's steadiness and modest fluctuations also implies that supplier volatility doesn't always directly translate into Apple's performance.
+
+```{r}
+ggplot(normalized_data_small, aes(x = date, y = percent_change, color = symbol)) + 
+  geom_line(linewidth = .5) +
+  labs(title = "Normalized Stock Performance",
+       x = "Date",
+       y = "Percent Change",
+       color = "Stock") + 
+  theme_minimal()
+```
+
+### Yearly Growth Line Plot
+
+### Annual Returns Bar Chart
+
+# Discussion
+
+## Relationship Between Apple and Suppliers
+
+Apple's stock performance isn't perfectly correlated with the suppliers. While suppliers do provide Apple with necessary components for manufacturing their products, their stock movements also depend on the broader semiconductor and electronics market.
+
+## Predictive Value
+
+Supplier stocks can provide early indicators of Apple's stock performance, especially the larger companies that have greater revenues. However, product launches, global demand, and brand perceptions also play a large role in Apples performance.
+
+## Limitations
+
+The data that we collected is limited from 2022 to the present, so it may not catch long-term patterns and cycles. Supplier stocks can also be influenced by clients other than Apple, so they aren't always reliable.
+
+# Conclusion
+
+# Code Appendix
 
 ```{r codeAppendix}
 #| ref.label = knitr::all_labels(),
 #| echo = TRUE,
 #| eval = FALSE
 
+# Load necessary libraries
 library(dplyr)
 library(tidyquant)
-tickers <- c("AAPL","HNHPF")
 library(ggplot2)
+library(scales) # Useful in formatting
+library(lubridate) # Allows us to work with dates easily
 library(kableExtra)
+library(knitr)
 
 # Add tickers for Apple, Foxconn, TSMC, Pegatron, and Compal
-tickers <- c("AAPL","HNHPF", "TSM", "4938.TW", "2324.TW")
+# AAPL    = Apple Inc.
+# HNHPF   = Hon Hai Precision (Foxconn) - OTC US listing
+# TSM     = Taiwan Semiconductor - NYSE ADR
+# 4938.TW = Pegatron Corp - Taiwan Stock Exchange
+# 2324.TW = Compal Electronics - Taiwan Stock Exchange
 
+tickers <- c("AAPL","HNHPF", "TSM", "4938.TW", "2324.TW")
 tickers_small <- c("AAPL", "HNHPF")
 
+# Start from Jan 1, 2022
 start_date <- "2022-01-01"
 end_date   <- Sys.Date() # Today
 
-
+#Get the daily stock price data from Yahoo Finance.
 stock_data <- tq_get(tickers, 
                      get  = "stock.prices", 
                      from = start_date, 
@@ -64,6 +146,31 @@ stock_data_small <- tq_get(tickers_small,
                      get  = "stock.prices", 
                      from = start_date, 
                      to   = end_date)
+
+# Fetch Data (if you haven't already)
+apple_data <- tq_get("AAPL", get = "stock.prices", from = "2023-01-01")
+
+# Rename columns to be capitalized for a professional look.
+table_sample <- apple_data %>%
+  tail(5) %>%                                      # Select only the last 5 rows
+  select(date, open, high, low, close, volume) %>% # Keep only essential columns
+  mutate(date = format(date, "%B %d, %Y")) %>%     # Format date nicely (e.g., "Jan 01, 2024")
+  rename(                                          # Rename columns for display
+    "Date"   = date,
+    "Open"   = open,
+    "High"   = high,
+    "Low"    = low,
+    "Close"  = close,
+    "Volume" = volume
+  )
+
+# 'scale_down' automatically shrinks the table if it's too wide for the PDF margin.
+# 'hold_position' forces the table to appear exactly where you put the code, not floating away.
+kbl(table_sample, caption = "Table 1: Recent Apple (AAPL) Stock Performance", booktabs = T) %>%
+  kable_styling(latex_options = c("striped", "scale_down", "hold_position")) %>%
+  column_spec(1, bold = TRUE) # Make the Date column bold
+
+
 
 "I normalized the data b/c APPL stock price is over 100 and HNHPF is less than 10, 
 so we wont be able to see the couple cent changes in foxconn and comparison to the dollar changes in APPL.
@@ -113,4 +220,59 @@ kable(
     font_size = 16, # Control Font Size
     lightable_options = "striped" # Adds striping in a pre-built table style
   )
+
+# Prepare Cumulative Growth chart
+yearly_growth <- stock_data %>% # Using the stock data from above.
+  mutate(year = year(date)) %>% # mUtates the data, new column called year
+  group_by(symbol, year) %>%
+  mutate(
+    # Reset growth to 0% at start of every year
+    pct_change = (adjusted / first(adjusted)) - 1
+  ) %>%
+  ungroup()
+
+# B. Total Annual Return for the Bar Chart
+annual_summary <- stock_data %>%
+  mutate(year = year(date)) %>%
+  group_by(symbol, year) %>%
+  summarize(
+    total_return = (last(adjusted) - first(adjusted)) / first(adjusted),
+    .groups = "drop"
+  )
+
+# Plot-1: Line Chart
+line_plot <- ggplot(yearly_growth, aes(x = date, y = pct_change, color = symbol)) +
+  geom_line(linewidth = 0.8) +
+  facet_wrap(~ year, scales = "free", ncol = 2) +
+  scale_y_continuous(labels = percent_format()) +
+  theme_tq() +
+  scale_color_tq() +
+  labs(
+    title = "Apple vs. Suppliers: Yearly Growth",
+    subtitle = "Performance reset to 0% at the start of each year",
+    y = "Cumulative Return",
+    x = "",
+    color = "Ticker"
+  ) +
+  theme(legend.position = "bottom")
+
+print(line_plot) # This will result in the line plot for every year.
+
+# Plot-2: Bar Chart
+bar_plot <- ggplot(annual_summary, aes(x = symbol, y = total_return, fill = symbol)) +
+  geom_col(color = "black", alpha = 0.8) +
+  facet_wrap(~ year, ncol = 2) +
+  geom_text(aes(label = percent(total_return, accuracy = 1)), 
+            vjust = -0.5, size = 3, fontface = "bold") +
+  scale_y_continuous(labels = percent_format(), expand = expansion(mult = c(0.1, 0.2))) +
+  scale_fill_tq() +
+  theme_tq() +
+  labs(
+    title = "Total Return for Each Year",
+    y = "Total % Change",
+    x = ""
+  ) +
+  theme(legend.position = "none")
+
+print(bar_plot) # This will result in the bar plot for every year.
 ```
