@@ -85,9 +85,63 @@ ggplot(normalized_data_small, aes(x = date, y = percent_change, color = symbol))
   theme_minimal()
 ```
 
-### Yearly Growth Line Plot
+### Annual Growth Line Plot
+
+This visualization shows how Apple's stock performance compares with it's suppliers every year. We plotted cumulative returns for each company, and reset their performance to 0% at the start of each year. This way, we can look at how each stock changes across different market conditions.
+
+In 2022, none of the stocks performed particularly well. Cumulative returns ranged from around 0% to -40% at the end of the year.
+
+2023 is when most of the companies started recovering and experiencing strong growth. Compal had the most growth, with cumulative returns at the end of the year reaching 80%. Foxconn, however, remained flat this year despite Apple's surge. This suggests that not all of the suppliers immediately respond to Apple's growth.
+
+Unlike in 2023, Foxconn had a dramatic rise in 2024, which peaked around 120% in the middle of the year before it stabilized. This likely reflects either an increase in production or a shift in its operations. In 2024, TSMC also continued its upward growth from the previous year while Apple, Compal, and Pegatron's growth remained more flat and stable.
+
+In 2025, both Compal and Pegatron's performance dipped and they are both ending the year with a cumulative return of around -20%. Apple maintained a mild and steady growth, while TSMC and Foxconn experienced stronger growth (despite a dip earlier in the year).
+
+By looking at these plots, we can see that TSMC consistently tracks Apple's performance while also often having stronger returns. Foxconn's growth was more delayed than TSMC's but still managed to have strong growth in 2024 and 2025, which suggests that it responds to Apple's demand cycles more slowly (which could offer predictive value). Pegatron and Compal's performances are less aligned with Apple, which indicates that they have less influence on Apple's stock or are less responsive.
+
+```{r}
+line_plot <- ggplot(yearly_growth, aes(x = date, y = pct_change, color = symbol)) +
+  geom_line(linewidth = 0.8) +
+  facet_wrap(~ year, scales = "free", ncol = 2) +
+  scale_y_continuous(labels = percent_format()) +
+  theme_tq() +
+  scale_color_tq() +
+  labs(
+    title = "Apple vs. Suppliers: Yearly Growth",
+    subtitle = "Performance reset to 0% at the start of each year",
+    y = "Cumulative Return",
+    x = "",
+    color = "Ticker"
+  ) +
+  theme(legend.position = "bottom")
+
+print(line_plot) # This will result in the line plot for every year.
+```
 
 ### Annual Returns Bar Chart
+
+The bar chart below summarizes the total annual return for Apple and its four main suppliers from 2022 to the present.  Each bar represents the percent change in __ from the beginning to the end of the year.
+
+2022 was a difficult year for every company, which correlates to how the tech market was still recovering from the effects of COVID-19.  2023 was when the Apple and its supplier companies started to rebound.  Compal and Apple had the strongest performance.  In 2024, growth slowed for Pegatron and Compal while Apple maintained solid growth.  TSMC and Foxconn surged, likely due to increased demand or changes in operations.  During 2025, Apple and its two main suppliers still grew, but at a more modest rate.  Pegatron and Compal declined, likely due to a lack of demand and a lull in sales for non-AI technology.
+
+```{r}
+bar_plot <- ggplot(annual_summary, aes(x = symbol, y = total_return, fill = symbol)) +
+  geom_col(color = "black", alpha = 0.8) +
+  facet_wrap(~ year, ncol = 2) +
+  geom_text(aes(label = percent(total_return, accuracy = 1)), 
+            vjust = -0.5, size = 3, fontface = "bold") +
+  scale_y_continuous(labels = percent_format(), expand = expansion(mult = c(0.1, 0.2))) +
+  scale_fill_tq() +
+  theme_tq() +
+  labs(
+    title = "Total Return for Each Year",
+    y = "Total % Change",
+    x = ""
+  ) +
+  theme(legend.position = "none")
+
+print(bar_plot) # This will result in the bar plot for every year.
+```
 
 # Discussion
 
