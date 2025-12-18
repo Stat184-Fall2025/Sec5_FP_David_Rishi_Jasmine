@@ -1,0 +1,40 @@
+---
+title: "Rishi_Proj_Table"
+format: pdf
+editor: visual
+---
+
+```{r}
+#| echo: false
+# Load necessary libraries
+# 'kableExtra' is crucial for forcing tables to fit on a PDF page
+library(tidyquant)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+
+# 1. Fetch Data (if you haven't already)
+apple_data <- tq_get("AAPL", get = "stock.prices", from = "2023-01-01")
+
+# Rename columns to be capitalized for a professional look.
+table_sample <- apple_data %>%
+  tail(5) %>%                                      # Select only the last 5 rows
+  select(date, open, high, low, close, volume) %>% # Keep only essential columns
+  mutate(date = format(date, "%B %d, %Y")) %>%     # Format date nicely (e.g., "Jan 01, 2024")
+  rename(                                          # Rename columns for display
+    "Date"   = date,
+    "Open"   = open,
+    "High"   = high,
+    "Low"    = low,
+    "Close"  = close,
+    "Volume" = volume
+  )
+
+# 'scale_down' automatically shrinks the table if it's too wide for the PDF margin.
+# 'hold_position' forces the table to appear exactly where you put the code, not floating away.
+kbl(table_sample, caption = "Table 1: Recent Apple (AAPL) Stock Performance", booktabs = T) %>%
+  kable_styling(latex_options = c("striped", "scale_down", "hold_position")) %>%
+  column_spec(1, bold = TRUE) # Make the Date column bold
+```
+
+
