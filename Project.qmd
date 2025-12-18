@@ -289,7 +289,9 @@ Jim Hester, Michael Quinn, and Kun Ren. *lintr: A 'Linter' for R Code*. R packag
 
 # Author Contribution
 
-David: Rishi: Jasmine: Narrative text, Data visualization
+David: Finding data, data wrangling, making qmd file, making data visualizations and tables
+Rishi: Finding data, data wrangling, making data visualizations and tables
+Jasmine: Narrative text, making data visualizations and tables
 
 # Code Appendix
 
@@ -358,6 +360,7 @@ normalized_data_small <- stock_data_small %>%
     percent_change = ((adjusted / first(adjusted) - 1)*100)
   ) 
 
+### Table 1:  Apple's Recent Trading Data
 
 # Fetch Data (if you haven't already)
 apple_data <- tq_get("AAPL", get = "stock.prices", from = "2023-01-01")
@@ -378,60 +381,64 @@ table_sample <- apple_data %>%
 
 # 'scale_down' automatically shrinks the table if it's too wide for the PDF margin.
 # 'hold_position' forces the table to appear exactly where you put the code, not floating away.
-kbl(table_sample, caption = "Table 1: Recent Apple (AAPL) Stock Performance", booktabs = T) %>%
+kbl(table_sample, caption = "Table 1: Recent Apple (AAPL) Stock Performance", booktabs = T,
+    alt = "A table showing Apple's stock performance over the last five trading days with columns for date, opening price, daily high, daily low, closing price, and trading volume. Prices range from $271 to $280 with highest volume on December 15th.") %>%
   kable_styling(latex_options = c("striped", "scale_down", "hold_position")) %>%
   column_spec(1, bold = TRUE) # Make the Date column bold
+
+### Table 2:  Normalized Percent Change
 
 normalized_data %>%
 kable(
   caption = "<center>Supplier Performance affects on Apple stock<center/>",
-  align = c("l", rep("c",7))
+  align = c("l", rep("c",7)),
+  alt = "A table showing normalized percentage changes for Apple, Foxconn, Pegatron, TSMC, and Compal from 2022-2025. Each stock's performance is set to 0% on January 1, 2022, which allows comparison between growth patterns with differently priced stocks."
 )%>%
   kable_classic( # Pre-built styling
     font_size = 16, # Control Font Size
     lightable_options = "striped" # Adds striping in a pre-built table style
   )
 
-# Annual Return Table
+### Table 3:  Annual Return Table
 annual_return_table <- annual_summary %>%
   mutate(
     total_return_pct = scales::percent(total_return, accuracy = 0.1)
   ) %>%
   select(symbol, year, total_return_pct) %>%  # Keep only the formatted column
   arrange(year, symbol)
-
-# Create a styled table
 kbl(
   annual_return_table,
   caption = "Annual Total Returns for Apple and Suppliers",
   col.names = c("Symbol", "Year", "Total Return (%)"),
   align = c("c","c","c"),
+  alt = "A table showing annual total returns from 2022-2025 for Apple, Foxconn, TSMC, Compal, and Pegatron. 2022 was mostly negative, 2023 showed strong recovery, 2024 had mixed results with TSMC and Foxconn surging, and 2025 shows moderate growth for Apple and its main suppliers."
 ) %>%
   kable_styling() %>%
   column_spec(1, bold = TRUE)   # Bolds the ticker column
 
-# Line chart
+### Graph 1:  Normalized Performance Line chart
 ggplot(normalized_data, aes(x = date, y = percent_change, color = symbol)) + 
   geom_line(linewidth = .5) +
   labs(title = "Normalized Stock Performance",
        x = "Date",
        y = "Percent Change",
-       color = "Stock") + 
+       color = "Stock",
+       alt = "A line chart showing normalized stock performance of Apple and four suppliers from 2022-2025. TSMC shows the highest overall growth with a strong upward growth starting in 2024. Foxconn follows a similar pattern with but is slightly less volatile. Apple shows steady moderate growth, while Pegatron and Compal show moderate growth followed by decline in 2025.") + 
   theme_minimal()
 
-
+### Graph 2:  Apple v. Foxconn Comparison
 ggplot(normalized_data_small, aes(x = date, y = percent_change, color = symbol)) + 
   geom_line(linewidth = .5) +
   labs(title = "Normalized Stock Performance",
        x = "Date",
        y = "Percent Change",
-       color = "Stock") + 
+       color = "Stock",
+       alt = "A comparison line chart showing Apple and Foxconn's normalized stock performance from 2022-2025. Foxconn shows higher volatility and has sharper swings, especially from 2024 onward where it surpasses Apple's growth rate. Both stocks trend upward but Foxconn's movements are more dramatic.") + 
   theme_minimal()
-
 
 # Prepare Cumulative Growth chart
 yearly_growth <- stock_data %>% # Using the stock data from above.
-  mutate(year = year(date)) %>% # mUtates the data, new column called year
+  mutate(year = year(date)) %>% # mutates the data, new column called year
   group_by(symbol, year) %>%
   mutate(
     # Reset growth to 0% at start of every year
@@ -448,7 +455,7 @@ annual_summary <- stock_data %>%
     .groups = "drop"
   )
 
-# Plot-1: Line Chart
+### Graph 3:  Annual Growth Line Plot
 line_plot <- ggplot(yearly_growth, aes(x = date, y = pct_change, color = symbol)) +
   geom_line(linewidth = 0.8) +
   facet_wrap(~ year, scales = "free", ncol = 2) +
@@ -460,13 +467,14 @@ line_plot <- ggplot(yearly_growth, aes(x = date, y = pct_change, color = symbol)
     subtitle = "Performance reset to 0% at the start of each year",
     y = "Cumulative Return",
     x = "",
-    color = "Ticker"
+    color = "Ticker",
+    alt = "A faceted line chart showing yearly total returns for Apple, Foxconn, TSMC, Compal, and Pegatron, with their performance being reset to 0% each year. 2022 shows declines for all companies. 2023 shows recovery with Compal leading. 2024 shows TSMC and Foxconn surging mid-year. 2025 shows Apple maintaining steady growth while some suppliers decline."
   ) +
   theme(legend.position = "bottom")
 
 print(line_plot) # This will result in the line plot for every year.
 
-# Plot-2: Bar Chart
+### Graph 4:  Annual Returns Bar Chart
 bar_plot <- ggplot(annual_summary, aes(x = symbol, y = total_return, fill = symbol)) +
   geom_col(color = "black", alpha = 0.8) +
   facet_wrap(~ year, ncol = 2) +
@@ -478,7 +486,8 @@ bar_plot <- ggplot(annual_summary, aes(x = symbol, y = total_return, fill = symb
   labs(
     title = "Total Return for Each Year",
     y = "Total % Change",
-    x = ""
+    x = "",
+    alt = "A faceted bar chart showing annual total returns for Apple and four of its main suppliers from 2022-2025. Each year shows five colored bars for the five companies. 2022 bars are mostly negative, 2023 bars are positive and tall, 2024 shows TSMC and Foxconn with very high returns, and 2025 shows moderate positive returns for some companies and negative for others."
   ) +
   theme(legend.position = "none")
 
