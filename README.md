@@ -39,8 +39,6 @@ Code Review: Cleaning the code appendix to ensure that it follows the Tidyverse 
 
 ## Repo Structure
 
-Use this section to explain the structure of your repo. This should help visitors quickly figure out where they should look to find certain elements. Further, you can use this space to highlight and briefly explain important/key files in the repo.
-
 Final_Project.qmd: The core analysis file. This Quarto document contains all R code for fetching data, cleaning, visualization, and regression analysis, interwoven with our narrative findings.
 
 Final_Project.pdf: The rendered final output of our analysis, ready for submission.
