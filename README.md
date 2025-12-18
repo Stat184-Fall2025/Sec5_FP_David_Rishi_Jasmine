@@ -5,19 +5,37 @@ Currently in progress.
 
 ## Overview
 
-Expand on those introductory sentences with a brief but informative description of your project's purpose and goals. This section should help visitors decide whether they should dig deeper into your repo/project.
+The primary goal of this project is to investigate the "supply chain signal", in particular, the hypothesis that the stock performance of key manufacturing partners can predict movements in Apple's (AAPL) stock price. The main supplier companies that we are focusing on are TSMC, Foxconn, Pegatron and Compal, which are all key suppliers of Apple.
+### Interesting Insight 
+Our linear regression analysis revealed a distinct hierarchy in the supply chain. While one might expect all suppliers to move in sync with Apple, our models show that TSMC is the only supplier with a strong, statistically significant positive correlation with Apple.
 
-### Interesting Insight (Optional)
+In contrast, the assemblers (Pegatron and Compal) showed high volatility and no statistically significant predictive power. This suggests that the market values proprietary technology (chips) differently than commodity labor (assembly), and that TSMC effects Apple's performance much more closely than the other supply partners do.
 
-This is optional but highly recommended. You'll include one interesting insight from your project as part of the README. This insight is most effective when you include a visual. Keep in mind that this visual must be included as an image file (e.g., JPG, PNG, etc.). You can export plots created with `{ggplot2}` by using the function `ggsave`.
+
+<img width="512" height="345" alt="image" src="https://github.com/user-attachments/assets/fa16374d-bab6-48a5-a658-16f856b007ff" />
 
 ## Data Sources and Acknowledgements
 
-Be sure to list where you got any data used within the project. Be sure to acknowledge any one whose work or elements you're drawing upon.
+Data Source: All financial data (daily stock prices, adjusted closing prices, and trading volume) was sourced from Yahoo Finance using the 'tidyquant' R package.
+
+Acknowledgements:
+
+This project relies heavily on the tidyverse ecosystem (dplyr, ggplot2) for data manipulation and visualization.
+
+We also utilize broom for tidying our statistical regression outputs and knitr/kableExtra for generating professional tables in our reports.
 
 ## Current Plan
 
-Provide some information about what you intend to doe with the project. You can additionally refer the visitor to your detailed plan document.
+We are currently in the final stages of the project. Our remaining tasks includes:
+
+Refining Visualizations: Ensuring all plots have accessible alt-text(Completed).
+
+Regression Analysis: We have moved from a multivariate model to individual linear regressions to better isolate specific supplier effects on the stock price of Apple(Completed).
+
+Final Report Generation: Knitting the final Quarto file into a submission-ready PDF.
+
+Code Review: Cleaning the code appendix to ensure that it follows the Tidyverse style guide.
+
 
 ## Repo Structure
 
@@ -26,4 +44,8 @@ Use this section to explain the structure of your repo. This should help visitor
 
 ## Authors
 
-Give information about who are the authors of the project and how people can get in touch if they have questions.
+David Goldberg - Data Manipulation &  Data Visualization. Please contact me at dpg5549@psu.edu
+
+Jasmine Randhawa - Narrative Text &  Data Visualization. Please contact me at jhr5389@psu.edu
+
+Rishi Lal - Narrative Text, Data Visualization and Data Analysis. Please contact me at rxl5565@psu.edu
